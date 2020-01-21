@@ -10,44 +10,97 @@ public class Robot extends LinearOpMode
 {
     private DcMotor motorTest;
     private Servo servoTest;
+    private Servo servoTest2;
     private DcMotor slide;
     DcMotor frontLeft;
     DcMotor frontRight;
     DcMotor middle;
 
     public void runOpMode() {
-        this.frontLeft = (DcMotor)this.hardwareMap.get(DcMotor.class, "fl");
-        this.frontRight = (DcMotor)this.hardwareMap.get(DcMotor.class, "fr");
-        this.middle = (DcMotor)this.hardwareMap.get(DcMotor.class, "mi");
-        this.servoTest = (Servo)this.hardwareMap.get(Servo.class, "sc");
-        this.motorTest = (DcMotor)this.hardwareMap.get(DcMotor.class, "mt");
-        this.slide = (DcMotor)this.hardwareMap.get(DcMotor.class, "sl");
-        this.telemetry.addData("Status", "Initialized");
-        this.telemetry.addData("Servo Position", this.servoTest.getPosition());
-        this.telemetry.addData("Motor Power", this.motorTest.getPower());
-        this.telemetry.addData("Status", "Running");
-        this.telemetry.update();
-        this.waitForStart();
+        frontLeft = hardwareMap.get(DcMotor.class, "fl");
+        frontRight = hardwareMap.get(DcMotor.class, "fr");
+        middle = hardwareMap.get(DcMotor.class, "mi");
+        servoTest = hardwareMap.get(Servo.class, "sc");
+        servoTest2 = hardwareMap.get(Servo.class, "sc2");
+        motorTest = hardwareMap.get(DcMotor.class, "mt");
+        slide = hardwareMap.get(DcMotor.class, "sl");
+        telemetry.addData("Status", "Initialized");
+        telemetry.addData("Servo Position", this.servoTest.getPosition());
+        telemetry.addData("Motor Power", this.motorTest.getPower());
+        telemetry.addData("Status", "Running");
+        telemetry.update();
+        waitForStart();
         double tgtPower = 0.0;
-        while (this.opModeIsActive()) {
-            this.frontLeft.setPower(this.gamepad1.left_stick_y);
-            this.frontRight.setPower(-this.gamepad1.left_stick_y);
-            this.middle.setPower(-this.gamepad1.right_stick_x);
-            this.frontRight.setPower(-this.gamepad1.left_stick_x);
-            this.frontLeft.setPower(-this.gamepad1.left_stick_x);
-            tgtPower = -this.gamepad2.left_stick_y;
-            this.motorTest.setPower(tgtPower);
-            if (this.gamepad1.y) {
-                this.servoTest.setPosition(0.0);
+        while (opModeIsActive()) {
+
+            // forward
+            if (gamepad1.dpad_up) {
+                frontLeft.setPower(-1);
+                frontRight.setPower(1);
+            } else {
+                frontLeft.setPower(0);
+                frontRight.setPower(0);
             }
-            else if (this.gamepad2.right_bumper) {
-                this.servoTest.setPosition(0.5);
+
+            // backward
+            if (gamepad1.dpad_down) {
+                frontLeft.setPower(1);
+                frontRight.setPower(-1);
+            } else {
+                frontLeft.setPower(0);
+                frontRight.setPower(0);
             }
-            else if (this.gamepad2.left_bumper) {
-                this.servoTest.setPosition(1.0);
+
+            // strafe right
+            if (gamepad1.dpad_right) {
+                frontLeft.setPower(-1);
+                frontRight.setPower(-1);
+            } else {
+                frontLeft.setPower(0);
+                frontRight.setPower(0);
             }
-            this.slide.setPower(this.gamepad2.right_trigger);
-            this.slide.setPower(-this.gamepad2.left_trigger);
+
+            // strafe left
+            if (gamepad1.dpad_left) {
+                frontLeft.setPower(1);
+                frontRight.setPower(1);
+            } else {
+                frontLeft.setPower(0);
+                frontRight.setPower(0);
+            }
+
+            // frontLeft.setPower(gamepad1.left_stick_y);
+            // frontRight.setPower(-gamepad1.left_stick_y);
+            middle.setPower(-gamepad1.right_stick_x);
+            // frontRight.setPower(-gamepad1.left_stick_x);
+            // frontLeft.setPower(-gamepad1.left_stick_x);
+            tgtPower = -gamepad2.left_stick_y;
+            motorTest.setPower(tgtPower);
+
+
+
+            if (gamepad1.y) {
+                servoTest.setPosition(0.0);
+            }
+            else if (gamepad2.right_bumper) {
+                servoTest.setPosition(0.38);
+            }
+            else if (gamepad2.left_bumper) {
+                servoTest.setPosition(1.0);
+            }
+            slide.setPower(gamepad2.right_trigger);
+            slide.setPower(-gamepad2.left_trigger);
+            
+            
+            if (gamepad2.a) {
+                servoTest2.setPosition(0.0);
+            }
+            else if (gamepad2.x) {
+                servoTest2.setPosition(0.50);
+            }
+            
+            telemetry.addData("Left", frontLeft.getCurrentPosition());
+            telemetry.update();
         }
     }
 }
